@@ -22,5 +22,5 @@ func init() {
 }
 
 func init()  {
-	DB.AutoMigrate(&Bank{})
+	DB.AutoMigrate(&Bank{},&Question{})
 }
