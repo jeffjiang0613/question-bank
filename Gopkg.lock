@@ -2,6 +2,40 @@
 
 
 [[projects]]
+  digest = "1:676e9d956cf18e062c9a3541e36472d4d713856e7d5d7f635af6e152088aa81c"
+  name = "baliance.com/gooxml"
+  packages = [
+    ".",
+    "algo",
+    "color",
+    "common",
+    "measurement",
+    "schema/soo/dml",
+    "schema/soo/dml/picture",
+    "schema/soo/ofc/docPropsVTypes",
+    "schema/soo/ofc/extended_properties",
+    "schema/soo/ofc/math",
+    "schema/soo/ofc/sharedTypes",
+    "schema/soo/pkg/content_types",
+    "schema/soo/pkg/metadata/core_properties",
+    "schema/soo/pkg/relationships",
+    "schema/soo/schemaLibrary",
+    "schema/soo/wml",
+    "zippkg",
+  ]
+  pruneopts = "UT"
+  revision = "31484197ea1e45d1b4ec456e688dbaa327cf295e"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:e8ef8218a84156933711f53c2a0cb368217a02a349f883f7103359c206529f59"
+  name = "github.com/baliance/gooxml"
+  packages = ["document"]
+  pruneopts = "UT"
+  revision = "a367a88248a672e25c75a001834cbe1cad690df1"
+  version = "v1.0.1"
+
+[[projects]]
   branch = "master"
   digest = "1:36fe9527deed01d2a317617e59304eb2c4ce9f8a24115bcc5c2e37b3aee5bae4"
   name = "github.com/gin-contrib/sse"
@@ -105,6 +139,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/baliance/gooxml/document",
     "github.com/gin-gonic/gin",
     "github.com/jinzhu/gorm",
     "github.com/jinzhu/gorm/dialects/sqlite",
