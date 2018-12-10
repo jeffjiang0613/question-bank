@@ -44,6 +44,17 @@
   revision = "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
 
 [[projects]]
+  branch = "master"
+  digest = "1:9b32acdd593672a2e1117018acb5b7a8a078712144d5b4fbd4f7222306ccce53"
+  name = "github.com/gin-gonic/contrib"
+  packages = [
+    "cors",
+    "gzip",
+  ]
+  pruneopts = "UT"
+  revision = "54170a7b0b4b2f9219c79599b1b03830a5a7d68d"
+
+[[projects]]
   digest = "1:d5083934eb25e45d17f72ffa86cae3814f4a9d6c073c4f16b64147169b245606"
   name = "github.com/gin-gonic/gin"
   packages = [
@@ -140,6 +151,8 @@
   analyzer-version = 1
   input-imports = [
     "github.com/baliance/gooxml/document",
+    "github.com/gin-gonic/contrib/cors",
+    "github.com/gin-gonic/contrib/gzip",
     "github.com/gin-gonic/gin",
     "github.com/jinzhu/gorm",
     "github.com/jinzhu/gorm/dialects/sqlite",
