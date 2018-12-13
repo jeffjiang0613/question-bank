@@ -1,34 +1,31 @@
-package questions
+package question_types
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jeffjiang0613/question-bank/helpers"
 	"github.com/jeffjiang0613/question-bank/models"
-	"strconv"
 )
 
-type CreateQuestionForm struct {
-	Raw       string `gorm:"index" json:"question"`
-	RawAnswer string `gorm:"index" json:"answer"`
-	BankId    uint   `json:"bank_id"`
-	Type      uint   `json:"type"`
+type CreateQuestionTypeForm struct {
+	Name   string `json:"name"`
+	Title  string `json:"title"`
+	BankId uint   `json:"bank_id"`
 }
 
-type UpdateQuestionForm struct {
-	ID        uint   `json:"id"`
-	Raw       string `gorm:"index" json:"question"`
-	RawAnswer string `gorm:"index" json:"answer"`
-	BankId    uint   `json:"bank_id"`
-	Type      uint   `json:"type"`
+type UpdateQuestionTypeForm struct {
+	ID     uint   `json:"id"`
+	Name   string `json:"name"`
+	Title  string `json:"title"`
+	BankId uint   `json:"bank_id"`
 }
 
 func Create(ctx *gin.Context) {
-	form := CreateQuestionForm{}
+	form := CreateQuestionTypeForm{}
 	if err := ctx.ShouldBindJSON(&form); err != nil {
 		helpers.JsonFailureRespond(ctx, "参数错误")
 	} else {
-		question := models.NewQuestion(form.Raw, form.RawAnswer, form.BankId, form.Type)
-		if question.Save() != nil {
+		qt := models.NewQuestionType(form.Name, form.Title, form.BankId)
+		if err := qt.Save(); err != nil {
 			helpers.JsonFailureRespond(ctx, "创建失败")
 		} else {
 			helpers.JsonSuccessfulRespond(ctx, "创建成功")
@@ -37,22 +34,20 @@ func Create(ctx *gin.Context) {
 }
 
 func List(ctx *gin.Context) {
-	page, err := strconv.Atoi(ctx.Query("page"))
-	if err != nil {
-		page = 0
-	}
-	helpers.JsonSuccessfulRespond(ctx, models.AllQuestions(page, 5))
+	bankId := ctx.Param("bank_id")
+	helpers.JsonSuccessfulRespond(ctx, models.AllQuestionTypes(bankId))
 }
 
 func Update(ctx *gin.Context) {
-	form := UpdateQuestionForm{}
+	form := UpdateQuestionTypeForm{}
 	if err := ctx.ShouldBindJSON(&form); err != nil {
 		helpers.JsonFailureRespond(ctx, "参数错误")
 	} else {
-		question, exits := models.GetQuestionById(form.ID)
+		qt, exits := models.GetQuestionTypeById(form.ID)
 		if exits {
-			question.UpdateRawAnswerType(form.Raw, form.RawAnswer, form.Type)
-			if question.Save() != nil {
+			qt.Name = form.Name
+			qt.BankId = form.BankId
+			if err := qt.Save(); err != nil {
 				helpers.JsonFailureRespond(ctx, "更新失败")
 			} else {
 				helpers.JsonSuccessfulRespond(ctx, "更新成功")
@@ -65,7 +60,7 @@ func Update(ctx *gin.Context) {
 
 func Delete(ctx *gin.Context) {
 	id := ctx.Param("id")
-	if err := models.DeleteQuestionById(id); err != nil {
+	if err := models.DeleteQuestionTypeById(id); err != nil {
 		helpers.JsonFailureRespond(ctx, "删除失败")
 	} else {
 		helpers.JsonSuccessfulRespond(ctx, "删除成功")

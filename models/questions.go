@@ -2,22 +2,17 @@ package models
 
 import "github.com/jeffjiang0613/question-bank/helpers"
 
-const (
-	QuestionTypeSingleChoice uint = iota
-	QuestionTypeMultiChoice
-)
-
 type Question struct {
 	Model
-	Content string	`gorm:"index" json:"-"`
-	Raw    string	`gorm:"index" json:"content"`
-	Answer string	`gorm:"index" json:"-"`
-	RawAnswer string	`gorm:"index" json:"answer"`
-	BankId uint	`json:"bank_id" json:"bank_id"`
-	Type    uint	`json:"type"`
+	Content   string `gorm:"index" json:"-"`
+	Raw       string `gorm:"index" json:"question"`
+	Answer    string `gorm:"index" json:"-"`
+	RawAnswer string `gorm:"index" json:"answer"`
+	BankId    uint   `json:"bank_id" json:"bank_id"`
+	Type      uint   `json:"type"`
 }
 
-func NewQuestion(raw string,rawAnswer string,bankId uint,questionType uint)*Question {
+func NewQuestion(raw string, rawAnswer string, bankId uint, questionType uint) *Question {
 	q := new(Question)
 	q.Raw = helpers.ComprassHtml(raw)
 	q.Content = q.Raw
@@ -28,7 +23,7 @@ func NewQuestion(raw string,rawAnswer string,bankId uint,questionType uint)*Ques
 	return q
 }
 
-func (question *Question)UpdateRawAnswerType(raw string,rawAnswer string,questionType uint)  {
+func (question *Question) UpdateRawAnswerType(raw string, rawAnswer string, questionType uint) {
 	question.Raw = helpers.ComprassHtml(raw)
 	question.Content = question.Raw
 	question.RawAnswer = question.RawAnswer
@@ -36,31 +31,39 @@ func (question *Question)UpdateRawAnswerType(raw string,rawAnswer string,questio
 	question.Type = questionType
 }
 
-func (question *Question)UpdateRawAnswer(raw string,rawAnswer string)  {
+func (question *Question) UpdateRawAnswer(raw string, rawAnswer string) {
 	question.Raw = helpers.ComprassHtml(raw)
 	question.Content = question.Raw
 	question.RawAnswer = question.RawAnswer
 	question.Answer = rawAnswer
 }
 
-func (question *Question)Save()  {
+func (question *Question) Save() (err error) {
 	if DB.NewRecord(question) {
-		DB.Create(question)
+		err = DB.Create(question).Error
 	} else {
-		DB.Save(question)
+		err = DB.Save(question).Error
 	}
+	return
 }
 
-func AllQuestions()[]Question {
+func AllQuestions(page, perPage int) []Question {
 	var questions []Question
-	DB.Find(&questions)
+	DB.Model(&Question{}).Order("id desc", false).Limit(perPage).Offset(perPage * page).Find(&questions)
 	return questions
 }
 
-func GetQuestionById(id uint) (question *Question, exists bool){
+func GetQuestionById(id uint) (question *Question, exists bool) {
 	question = new(Question)
-	if DB.First(question,"id = ?",id).RecordNotFound() {
-		return question,false
+	if DB.First(question, "id = ?", id).RecordNotFound() {
+		return question, false
 	}
-	return question,true
+	return question, true
+}
+
+func DeleteQuestionById(id string) error {
+	if err := DB.Delete(&Question{}, "id = ?", id).Error; err != nil {
+		return err
+	}
+	return nil
 }

@@ -21,6 +21,6 @@ func init() {
 	DB = db
 }
 
-func init()  {
-	DB.AutoMigrate(&Bank{},&Question{})
+func init() {
+	DB.AutoMigrate(&Bank{}, &Question{}, &QuestionType{})
 }
