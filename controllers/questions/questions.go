@@ -11,7 +11,7 @@ type CreateQuestionForm struct {
 	Raw       string `gorm:"index" json:"question"`
 	RawAnswer string `gorm:"index" json:"answer"`
 	BankId    uint   `json:"bank_id"`
-	Type      uint   `json:"type"`
+	TypeId      uint   `json:"type_id"`
 }
 
 type UpdateQuestionForm struct {
@@ -19,7 +19,7 @@ type UpdateQuestionForm struct {
 	Raw       string `gorm:"index" json:"question"`
 	RawAnswer string `gorm:"index" json:"answer"`
 	BankId    uint   `json:"bank_id"`
-	Type      uint   `json:"type"`
+	TypeId      uint   `json:"type_id"`
 }
 
 func Create(ctx *gin.Context) {
@@ -27,7 +27,7 @@ func Create(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&form); err != nil {
 		helpers.JsonFailureRespond(ctx, "参数错误")
 	} else {
-		question := models.NewQuestion(form.Raw, form.RawAnswer, form.BankId, form.Type)
+		question := models.NewQuestion(form.Raw, form.RawAnswer, form.BankId, form.TypeId)
 		if question.Save() != nil {
 			helpers.JsonFailureRespond(ctx, "创建失败")
 		} else {
@@ -51,7 +51,7 @@ func Update(ctx *gin.Context) {
 	} else {
 		question, exits := models.GetQuestionById(form.ID)
 		if exits {
-			question.UpdateRawAnswerType(form.Raw, form.RawAnswer, form.Type)
+			question.UpdateRawAnswerType(form.Raw, form.RawAnswer, form.TypeId)
 			if question.Save() != nil {
 				helpers.JsonFailureRespond(ctx, "更新失败")
 			} else {

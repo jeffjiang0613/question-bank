@@ -40,7 +40,7 @@ func Route(app *gin.Engine) {
 
 	papersGroup := top.Group("/papers")
 	{
-		papersGroup.GET("", papers.Create)
+		papersGroup.POST("", papers.Create)
 	}
 
 	ueditorGroup := top.Group("/ueditors")

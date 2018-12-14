@@ -1,6 +1,7 @@
 package papers
 
 import (
+	"fmt"
 	"github.com/baliance/gooxml/document"
 	"github.com/gin-gonic/gin"
 	"github.com/jeffjiang0613/question-bank/helpers"
@@ -10,9 +11,8 @@ import (
 
 type CreatePaperForm struct {
 	Datas []struct {
-		Type int `json:"type" binding:"required"`
+		ID string	`json:"id" binding:"required"`
 		Count int `json:"count" binding:"required"`
-		Name string `json:"name"`
 	} `json:"datas"`
 }
 
@@ -22,18 +22,15 @@ func Create(ctx *gin.Context)  {
 		helpers.JsonFailureRespond(ctx,"参数错误")
 	} else {
 		var sqls []string
-		var params []interface{}
 		for _,value :=range form.Datas {
 			if value.Count > 0 {
-				sqls = append(sqls, "(select * from questions where type = ? limit ?)")
-				params = append(params, value.Type)
-				params = append(params, value.Count)
+				sqls = append(sqls, fmt.Sprintf("select * from(select * from questions where type_id = %s limit %d)",value.ID,value.Count))
 			}
 		}
 		if len(sqls) > 0 {
-			sql := strings.Join(sqls," union ")+ ";"
-			var q []models.Question
-			models.DB.Raw(sql,params...).Scan(&q)
+			sql := fmt.Sprintf("select q.raw raw,q.raw_answer raw_answer,qt.title question_type_title, qt.sort question_type_sort  from (%s) q left join question_types qt on q.type_id = qt.id;",strings.Join(sqls," union "))
+			var q []models.Question3
+			models.DB.Raw(sql).Scan(&q)
 			GeneratePaper(q,ctx)
 		} else {
 			helpers.JsonFailureRespond(ctx,"没有出题")
@@ -42,7 +39,7 @@ func Create(ctx *gin.Context)  {
 	}
 }
 
-func GeneratePaper(questions []models.Question, ctx *gin.Context)  {
+func GeneratePaper(questions []models.Question3, ctx *gin.Context)  {
 	doc := document.New()
 	ctx.Header("content-disposition", `attachment; filename=` + "a.docx")
 	doc.Save(ctx.Writer)
